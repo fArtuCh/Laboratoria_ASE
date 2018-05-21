@@ -1,21 +1,34 @@
 import numpy as np
 import random
-import timeit as T
 import time
 random.seed()
 
-def sortuj_babelkowo(Lista):
+
+#############GENERATING RANDOM NUMBERS IN TABLE#######################
+ilosc_elementow=500
+random.randint(0,9)
+Lista=np.arange(0,ilosc_elementow,1)
+for i in range (ilosc_elementow):
+    Lista[i]=random.randint(0,9);
+
+Lista2=Lista.copy()
+Lista3=Lista.copy()
+Lista4=Lista.copy()
+czy_koniec=False;
+ile_razy=0
+#############-----------------------------------######################
+
+def sortuj_babelkowo():
     wielkosc=len(Lista)
     flaga=True
     for i in range(wielkosc-1):
         if(Lista[wielkosc-1-i]<Lista[wielkosc-i-2]):
             temp=Lista[wielkosc-i-1]
-            temp2=Lista[wielkosc-i-2]
-            Lista[wielkosc - i-1]=temp2
-            Lista[wielkosc - i - 2]=temp
+            Lista[wielkosc - i - 1]  = Lista[wielkosc-i-2]
+            Lista[wielkosc - i - 2]  = temp
             flaga=False
             break;
-    return Lista,flaga
+    return flaga
 
 
 def sortuj_zamiana(Lista2):
@@ -23,9 +36,7 @@ def sortuj_zamiana(Lista2):
     flaga=False
     najmniejszy_element=0
     aktualny_indeks=0;
-    iterator=0;
     cos=True
-
 
     while(flaga==False):
 
@@ -50,13 +61,11 @@ def sortuj_zamiana(Lista2):
             Lista2[aktualny_indeks]=temp2
             Lista2[iterator]=temp1
 
-
         else:
             if(aktualny_indeks<wielkosc):
                 aktualny_indeks+=1
             else:
                 break
-
         if(najmniejszy_element==9):
             flaga=True
 
@@ -64,25 +73,15 @@ def sortuj_zamiana(Lista2):
     return Lista2,flaga
 
 
-
-
-ilosc_elementow=200
-random.randint(0,9)
-Lista=np.arange(0,ilosc_elementow,1)
-for i in range (ilosc_elementow):
-    Lista[i]=random.randint(0,9);
-
-Lista2=Lista.copy()
-Lista3=Lista.copy()
-Lista4=Lista.copy()
-czy_koniec=False;
-ile_razy=0
-
+#############ARGORITH BUBLE SORT######################################
 Pocz=time.clock()
 while(czy_koniec==False):
-    [Lista,czy_koniec]=sortuj_babelkowo(Lista)
+    czy_koniec=sortuj_babelkowo()
     ile_razy+=1
 Kon=time.clock()
+#############____________________#########################################
+
+############## PRINTING RESULT AND SECOND ALGORITHM ######################
 print("Ile nawrotow:")
 print(ile_razy)
 print("Czas dla babelkowego:")
@@ -92,22 +91,22 @@ Lista2=sortuj_zamiana(Lista2);
 Kon=time.clock()
 print("Czas dla zamiany:")
 print (Kon-Pocz)
+#################------------------------#################################
+
+wielkosc=len(Lista3)
+temp=0
 
 def sortuj_brytyjcycy(P1,P2):
-    wielkosc=len(Lista3)
     if(P1>=0 and P1+1<P2):
-        Piwo=P1;
-        Lewy=P1+1;
-        Prawy=P2;
+        Piwo=P1
+        Lewy=P1+1
+        Prawy=P2
         while(Lewy!=Prawy ):
             if(Lista3[Lewy]>=Lista3[Piwo]):
                 if (Lista3[Prawy] < Lista3[Piwo]):
-                    if(Prawy>=Lewy):
                         temp=Lista3[Prawy]
                         Lista3[Prawy]=Lista3[Lewy]
                         Lista3[Lewy]=temp
-                    else:
-                        break
                 else:
                     if (Prawy >0):
                          Prawy-=1
@@ -116,15 +115,14 @@ def sortuj_brytyjcycy(P1,P2):
             else :
                 Lewy+=1
 
-
-        temp2 = Lista3[Piwo]
+        temp = Lista3[Piwo]
         Lista3[Piwo] = Lista3[Lewy - 1]
-        Lista3[Lewy - 1] = temp2
+        Lista3[Lewy - 1] = temp
 
         if(Piwo<Lewy):
             sortuj_brytyjcycy(Piwo,Lewy)
-        if(Prawy!=wielkosc-1):
-            sortuj_brytyjcycy(Prawy,wielkosc-1)
+        if(Prawy<wielkosc-1):
+            sortuj_brytyjcycy(Prawy,P2)
         return
     return
 
