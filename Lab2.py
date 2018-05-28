@@ -11,16 +11,16 @@ def UZ(Droga,A,B,Wa):
     return Droga
 
 
-Drogi= [     [0 , 9 , 9 , 9 , 9 , 9 , 9], #A
-             [9 , 0 , 9 , 9 , 9 , 9 , 9],  #B
-             [9 , 9 , 0 , 9 , 9 , 9 , 9],  #C
-             [9 , 9 , 9 , 0 , 9 , 9 , 9],  #D
-             [9 , 9 , 9 , 9 , 0 , 9 , 9], #E
-             [9 , 9 , 9 , 9 , 9 , 0 , 9], #F
-             [9 , 9 , 9 , 9 , 9 , 9 , 0]   #G
+Drogi= [     [0 , -1 , -1 , -1 , -1 , -1 , -1], #A
+             [-1 , 0 , -1 , -1 , -1 , -1 , -1],  #B
+             [-1 , -1 , 0 , -1 , -1 , -1 , -1],  #C
+             [-1 , -1 , -1 , 0 , -1 , -1 , -1],  #D
+             [-1 , -1 , -1 , -1 , 0 , -1 , -1], #E
+             [-1 , -1 , -1 , -1 , -1 , 0 , -1], #F
+             [-1 , -1 , -1 , -1 , -1 , -1 , 0]   #G
 ]
 
-Wielkosc=len(W)
+
 Drogi=UZ(Drogi,'A','C',1)
 Drogi=UZ(Drogi,'A','D',2)
 Drogi=UZ(Drogi,'C','B',2)
@@ -30,51 +30,63 @@ Drogi=UZ(Drogi,'F','E',2)
 Drogi=UZ(Drogi,'B','F',3)
 Drogi=UZ(Drogi,'D','G',1)
 Drogi=UZ(Drogi,'G','F',1)
-Wartosc_trasy=[]
 
 Indeksy=['A','B','C','D','E','F','G']
-S=[]                                            # WIERZCHOLKI PRZETWORZONE
-Q={'A':0,'B':1,'C':2,'D':3,'E':4,'F':5,'G':6}   # WIERZCHOLKI DO PRZETWORZENIA
-D_W={'A':9,'B':9,'C':9,'D':9,'E':9,'F':9,'G':9} # Tymczasowe drogi
-
-#--------POCZATEK----------#
+S=[]                                                    # WIERZCHOLKI PRZETWORZONE
+Q={'A','B','C','D','E','F','G'}                         # WIERZCHOLKI DO PRZETWORZENIA
+D_W={'A':-1,'B':-1,'C':-1,'D':-1,'E':-1,'F':-1,'G':-1}  # Tymczasowe drogi
+Q.discard('A')
 D_W['A']=0
-S.append(Q['A'])
-Q.__delitem__('A')
-#--------Koniec------------#
+S.append('A')
+Najmniejszy_W='A'
 
-#-------PETLA--------------#
-koniec=False;
-while(koniec):
 
-    #Droga z A Do Wszystkich
-    for i in Indeksy:
-        if(Drogi[W['A']][W[i]]!=9):
-            D_W[i]=Drogi[W['A']][W[i]]
+for i in Indeksy:
+    if (Drogi[W[Najmniejszy_W]][W[i]] > 0):
+        if (D_W[i] > Drogi[W[Najmniejszy_W]][W[i]] or D_W[i] < 0):
+            D_W[i] = Drogi[W[Najmniejszy_W]][W[i]]
+#-------PETLA-------------#
 
+while(len(Q)>0):
 
     # SZUKAMY NAJMNIEJSZEJ DROGI
-    Najmniejszy_W='G'
-    Wartosc=9
 
-    for i in Indeksy:
-        if (Q.__contains__(i)):
-            if(D_W[i]<Wartosc):
-                Wartosc=D_W[i]
-                Najmniejszy_W=i
+    Wartosc=100
+    Najmniejszy_TEMP='A' # tymczasowy by nie zmienial petli
 
 
+    for i in Q:  # Dla wszystkich otaczajacych wierzcholkow
+        if(Drogi[W[Najmniejszy_W]][W[i]]>0): # Sprawdz czy jest do nich polaczenie
+                if(D_W[i]>Drogi[W[Najmniejszy_W]][W[i]] or D_W[i]<0):
+                    D_W[i]=Drogi[W[Najmniejszy_W]][W[i]]+D_W[Najmniejszy_W]
 
-    print("NAJMNIEJSZA DROGA DO:")
-    print(Najmniejszy_W)
-    Q.__delitem__(Najmniejszy_W)
-    print("WARTOSCI DROGI:")
-    print (D_W)
-    print("POZOSTALE WIERCHOLKI:")
-    print (Q)
-    koniec=True;
+                if(D_W[i]>0 and D_W[i]<Wartosc): # Jesli jest do niego polaczenie i ma najmniejsza wartosc z obecnych, przejdz do niego
+                    Wartosc=D_W[i]
+                    Najmniejszy_TEMP=i
+
+    Najmniejszy_W=Najmniejszy_TEMP
+    S.append(Najmniejszy_W)  # dodaj wyszukany wierzcholek do nastepnego kroku
+    Q.discard(Najmniejszy_W) # Usun wierzcholek ze swojej listy wiercholkow
+
+
+    if(Najmniejszy_W=='F'):
+        break
+
+
 
 #-------PETLA-KONIEC---------#
+
+
+print("NAJMNIEJSZA DROGA DO:")
+print(Najmniejszy_W)
+print("Droga do F:")
+print(S)
+print("WARTOSCI DROGI:")
+print (D_W)
+
+
+
+
 
 
 
