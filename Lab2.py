@@ -23,7 +23,7 @@ Drogi= [     [0 , -1 , -1 , -1 , -1 , -1 , -1], #A
 
 Drogi=UZ(Drogi,'A','C',1)
 Drogi=UZ(Drogi,'A','D',2)
-Drogi=UZ(Drogi,'C','B',2)
+Drogi=UZ(Drogi,'C','B',3)
 Drogi=UZ(Drogi,'C','D',1)
 Drogi=UZ(Drogi,'C','E',3)
 Drogi=UZ(Drogi,'F','E',2)
@@ -64,9 +64,14 @@ while(len(Q)>0):
                     Wartosc=D_W[i]
                     Najmniejszy_TEMP=i
 
-    Najmniejszy_W=Najmniejszy_TEMP
-    S.append(Najmniejszy_W)  # dodaj wyszukany wierzcholek do nastepnego kroku
-    Q.discard(Najmniejszy_W) # Usun wierzcholek ze swojej listy wiercholkow
+    if(Najmniejszy_TEMP=='A'):
+        S.append(Najmniejszy_W)
+        Najmniejszy_W=Q.pop()
+
+    else:
+         Najmniejszy_W=Najmniejszy_TEMP
+         S.append(Najmniejszy_W)  # dodaj wyszukany wierzcholek do nastepnego kroku
+         Q.discard(Najmniejszy_W) # Usun wierzcholek ze swojej listy wiercholkow
 
 
     if(Najmniejszy_W=='F'):
@@ -77,8 +82,6 @@ while(len(Q)>0):
 #-------PETLA-KONIEC---------#
 
 
-print("NAJMNIEJSZA DROGA DO:")
-print(Najmniejszy_W)
 print("Droga do F:")
 print(S)
 print("WARTOSCI DROGI:")
