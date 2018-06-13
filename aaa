@@ -1,0 +1,95 @@
+package com.jwszol;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import scala.Int;
+import static org.apache.spark.sql.functions.col;
+
+public class SqlSparkJob {
+
+    private Dataset<Row> dfUsers = null;
+    private Dataset<Row> dfTrans = null;
+    private Dataset<Row> dfProdukt = null;
+    private SparkSession spark = null;
+
+    public SqlSparkJob(SparkSession spark){
+        this.spark = spark;
+        this.dfUsers = this.spark.read().option("delimiter","|").option("header","true").csv("./src/main/resources/users.txt");
+        this.dfTrans = this.spark.read().option("delimiter","|").option("header","true").csv("./src/main/resources/transactions.txt");
+        this.dfProdukt = this.spark.read().option("delimiter","|").option("header","true").csv("./src/main/resources/prod-meta.txt");
+    }
+
+    public void getSchema()
+    {
+        dfUsers.printSchema();
+    }
+
+    public void getEmail(){
+        dfUsers.select(col("email")).show();
+    }
+
+    public Dataset<Row> addValueToId()
+    {
+        // Register the DataFrame as a SQL temporary view
+        Dataset<Row> tempdfUsers =  dfUsers.select(col("email"), col("id").plus(1).name("new_id"));
+        tempdfUsers.registerTempTable("users2");
+        Dataset<Row> sqldfUsers = this.spark.sql("SELECT * FROM users2");
+        sqldfUsers.show();
+        return sqldfUsers;
+    }
+
+    public void selectUsersGt2(Dataset<Row> users)
+    {
+        users.createOrReplaceTempView("users3");
+
+        Dataset<Row> limitedUsersList = this.spark.sql("SELECT * from users3 WHERE new_id > 2");
+        limitedUsersList.show();
+    }
+
+    public void printTransSchema()
+    {
+        this.dfTrans.show();
+    }
+
+    public void joinData()
+    {
+        Dataset<Row> joinDs = this.dfTrans.join(dfUsers, this.dfTrans.col("user_id").equalTo(this.dfUsers.col("id")),"leftouter");
+        joinDs.show();
+    }
+
+    public void moja1()
+    {
+        //TAB1 ilosc produktow kazdy uzytkownik
+        Dataset<Row> x2 =  dfTrans;
+        x2.registerTempTable("tab2");
+        Dataset<Row> wynik1 = this.spark.sql("SELECT count(user_id)as u1 FROM tab2 where user_id=1");
+        Dataset<Row> wynik2 = this.spark.sql("SELECT count(user_id)as u2 FROM tab2 where user_id=2");
+        Dataset<Row> wynik3 = this.spark.sql("SELECT count(user_id)as u3 FROM tab2 where user_id=3");
+        Dataset<Row> wynik=wynik1.join(wynik2);
+        wynik=wynik.join(wynik3);
+        wynik.show();
+    }
+    public void moja2()
+    {
+        //TAB2 ilosc produktow w danej lokalizacji
+        Dataset<Row> x2 =  dfTrans;
+        x2.registerTempTable("tab2");
+        Dataset<Row> wynik1 = this.spark.sql("SELECT count(user_id)as EN_prod FROM tab2 where user_id=1 or user_id=2");
+        Dataset<Row> wynik2 = this.spark.sql("SELECT count(user_id)as Fr_prod FROM tab2 where user_id=3");
+
+        Dataset<Row> wynik=wynik1.join(wynik2);
+        wynik.show();
+    }
+    public void moja3()
+    {
+        //TAB2 najczesciej kupowany produkt w lokalizacji
+        Dataset<Row> x2 =  dfTrans;
+        x2.registerTempTable("tab2");
+        Dataset<Row> x3 =  dfProdukt;
+        x3.registerTempTable("tab3");
+        Dataset<Row> wynik1 = this.spark.sql("SELECT count(user_id)as EN_najczesciej,count(user_id)as FR_najczesciej FROM tab2,tab3 ");
+
+
+        wynik1.show();
+    }
+}
